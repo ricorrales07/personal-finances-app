@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ventanaPrincipal</class>
+ <widget class="QMainWindow" name="ventanaPrincipal">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QLabel" name="lbl_mes">
+        <property name="text">
+         <string>Mes: </string>
+        </property>
+        <property name="buddy">
+         <cstring>dte_mes</cstring>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QDateEdit" name="dte_mes">
+        <property name="minimumSize">
+         <size>
+          <width>90</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="displayFormat">
+         <string>MM/yyyy</string>
+        </property>
+        <property name="calendarPopup">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QLabel" name="lbl_gastos">
+          <property name="text">
+           <string>Gastos</string>
+          </property>
+          <property name="buddy">
+           <cstring>tw_gastos</cstring>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QTableWidget" name="tw_gastos"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="MplCanvas" name="wgt_grafico" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>350</width>
+          <height>0</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_Archivo">
+    <property name="title">
+     <string>&amp;Archivo</string>
+    </property>
+    <widget class="QMenu" name="menu_Importar">
+     <property name="title">
+      <string>&amp;Importar</string>
+     </property>
+     <addaction name="actionArchivo_de_movimientos_del_Banco_Nacional"/>
+    </widget>
+    <addaction name="menu_Importar"/>
+   </widget>
+   <addaction name="menu_Archivo"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionArchivo_de_movimientos_del_Banco_Nacional"/>
+  </widget>
+  <action name="actionArchivo_de_movimientos_del_Banco_Nacional">
+   <property name="text">
+    <string>Archivo de movimientos del Banco Nacional</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MplCanvas</class>
+   <extends>QWidget</extends>
+   <header>ui_MplCanvas.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
