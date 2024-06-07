@@ -93,11 +93,9 @@ class VentanaPrincipal(QMainWindow, Ui_ventanaPrincipal):
         
         saldosBN1.rename(columns={'fechaMovimiento': 'fechaRegistro'}, inplace=True)
         
-        parseados = saldosBN1.apply(lambda fila: VentanaPrincipal.parse_descripcion(fila['fechaRegistro'], fila['descripcion']), axis=1)
+        parseados = saldosBN1.apply(lambda fila: VentanaPrincipal.parse_descripcion(fila['fechaRegistro'], fila['descripcion'], fila['debito']), axis=1)
         parseadosDf = pd.DataFrame(parseados.tolist(), index=parseados.index, columns=['fechaMovimiento', 'descripcion'])
         saldosBN1[['fechaMovimiento', 'categoria']] = parseadosDf
-        
-        print(saldosBN1['debito'])
         
         dlg_importar = Dlg_Importar(saldosBN1)
         respuesta = dlg_importar.exec_()
@@ -114,17 +112,18 @@ class VentanaPrincipal(QMainWindow, Ui_ventanaPrincipal):
         fecha_seleccionada = self.dte_mes.date()
         
         if self.df is not None:
-            resumen = self.df[(self.df['fechaMovimiento'].dt.month == fecha_seleccionada.month()) & (self.df['fechaMovimiento'].dt.year == fecha_seleccionada.year())][['categoria', 'debito']].groupby('categoria').sum()
+            resumen = self.df[(self.df['fechaMovimiento'].dt.month == fecha_seleccionada.month()) & (self.df['fechaMovimiento'].dt.year == fecha_seleccionada.year())][['categoria', 'debito', 'credito']].groupby('categoria').sum()
             
             llenar_tabla(self.tw_gastos, resumen.reset_index())
             
-            self.wgt_grafico.axes.cla()
-            resumen.plot.pie(y='debito', ax=self.wgt_grafico.axes)
-            #self.wgt_grafico.axes.plot([1, 2, 3], [8, 4, 5])
+            for ax in self.wgt_grafico.axes:
+                ax.cla()
+            resumen.plot.pie(y='debito', ax=self.wgt_grafico.axes[0])
+            resumen.plot.pie(y='credito', ax=self.wgt_grafico.axes[1])
             self.wgt_grafico.draw()
         
     @staticmethod
-    def parse_descripcion(fecha, descripcion):
+    def parse_descripcion(fecha, descripcion, debito):
     
         try:
             dia = int(descripcion[:2])
@@ -138,9 +137,9 @@ class VentanaPrincipal(QMainWindow, Ui_ventanaPrincipal):
                 anno = 2000 + int(descripcion[6:10])
                 descripcion = descripcion[10:]
             except ValueError:
-                return fecha, "Otros gastos"
-            
-        fecha = datetime(anno, mes, dia)
+                pass
+            else:
+                fecha = datetime(anno, mes, dia)
         
         if "UBER BV" in descripcion:
             return fecha, "Transporte"
@@ -150,6 +149,10 @@ class VentanaPrincipal(QMainWindow, Ui_ventanaPrincipal):
             return fecha, "Diario"
         elif "TRU VICE" in descripcion:
             return fecha, "Suscripciones"
+        elif "SALARIO PLANILLA BANCO NACIONAL" in descripcion:
+            return fecha, "Salario BN"
+        elif debito == 0:
+            return fecha, "Otros ingresos"
         else:
             return fecha, "Otros gastos"
         
