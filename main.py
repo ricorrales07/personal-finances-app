@@ -93,7 +93,7 @@ class VentanaPrincipal(QMainWindow, Ui_ventanaPrincipal):
         
         saldosBN1.rename(columns={'fechaMovimiento': 'fechaRegistro'}, inplace=True)
         
-        parseados = saldosBN1.apply(lambda fila: VentanaPrincipal.parse_descripcion(fila['fechaRegistro'], fila['descripcion']), axis=1)
+        parseados = saldosBN1.apply(lambda fila: VentanaPrincipal.parse_descripcion(fila['fechaRegistro'], fila['descripcion'], fila['debito']), axis=1)
         parseadosDf = pd.DataFrame(parseados.tolist(), index=parseados.index, columns=['fechaMovimiento', 'descripcion'])
         saldosBN1[['fechaMovimiento', 'categoria']] = parseadosDf
         
@@ -124,7 +124,7 @@ class VentanaPrincipal(QMainWindow, Ui_ventanaPrincipal):
             self.wgt_grafico.draw()
         
     @staticmethod
-    def parse_descripcion(fecha, descripcion):
+    def parse_descripcion(fecha, descripcion, debito):
     
         try:
             dia = int(descripcion[:2])
@@ -150,6 +150,10 @@ class VentanaPrincipal(QMainWindow, Ui_ventanaPrincipal):
             return fecha, "Diario"
         elif "TRU VICE" in descripcion:
             return fecha, "Suscripciones"
+        elif "SALARIO PLANILLA BANCO NACIONAL" in descripcion:
+            return fecha, "Salario BN"
+        elif debito == 0:
+            return fecha, "Otros ingresos"
         else:
             return fecha, "Otros gastos"
         
