@@ -15,7 +15,7 @@ import sys
 import pandas as pd
 from datetime import datetime
 
-__version__ = "0.0.0"
+__version__ = "0.0.1"
 COLUMNA_CATEGORIA = 6
 
 def llenar_tabla(table_widget, df):
