@@ -112,14 +112,22 @@ class VentanaPrincipal(QMainWindow, Ui_ventanaPrincipal):
         fecha_seleccionada = self.dte_mes.date()
         
         if self.df is not None:
-            resumen = self.df[(self.df['fechaMovimiento'].dt.month == fecha_seleccionada.month()) & (self.df['fechaMovimiento'].dt.year == fecha_seleccionada.year())][['categoria', 'debito', 'credito']].groupby('categoria').sum()
+            resumen = self.df[(self.df['fechaMovimiento'].dt.month \
+                               == fecha_seleccionada.month()) \
+                              & (self.df['fechaMovimiento'].dt.year \
+                                 == fecha_seleccionada.year())] \
+                [['categoria', 'debito', 'credito']].groupby('categoria').sum()
             
             llenar_tabla(self.tw_gastos, resumen.reset_index())
             
             for ax in self.wgt_grafico.axes:
                 ax.cla()
-            resumen.plot.pie(y='debito', ax=self.wgt_grafico.axes[0])
-            resumen.plot.pie(y='credito', ax=self.wgt_grafico.axes[1])
+            resumen.plot.pie(y='debito', ax=self.wgt_grafico.axes[0],
+                             ylabel=None, legend=False, title="Débito")
+            self.wgt_grafico.axes[0].set_ylabel('')
+            resumen.plot.pie(y='credito', ax=self.wgt_grafico.axes[1],
+                             ylabel=None, legend=False, title="Crédito")
+            self.wgt_grafico.axes[1].set_ylabel('')
             self.wgt_grafico.draw()
         
     @staticmethod
