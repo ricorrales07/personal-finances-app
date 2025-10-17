@@ -67,10 +67,14 @@ class Ui_ventanaPrincipal(object):
         ventanaPrincipal.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
         self.actionArchivo_de_movimientos_del_Banco_Nacional = QtWidgets.QAction(ventanaPrincipal)
         self.actionArchivo_de_movimientos_del_Banco_Nacional.setObjectName("actionArchivo_de_movimientos_del_Banco_Nacional")
+        self.actionArchivo_de_movimientos_de_BAC_Credomatic = QtWidgets.QAction(ventanaPrincipal)
+        self.actionArchivo_de_movimientos_de_BAC_Credomatic.setObjectName("actionArchivo_de_movimientos_de_BAC_Credomatic")
         self.menu_Importar.addAction(self.actionArchivo_de_movimientos_del_Banco_Nacional)
+        self.menu_Importar.addAction(self.actionArchivo_de_movimientos_de_BAC_Credomatic)
         self.menu_Archivo.addAction(self.menu_Importar.menuAction())
         self.menubar.addAction(self.menu_Archivo.menuAction())
         self.toolBar.addAction(self.actionArchivo_de_movimientos_del_Banco_Nacional)
+        self.toolBar.addAction(self.actionArchivo_de_movimientos_de_BAC_Credomatic)
         self.lbl_mes.setBuddy(self.dte_mes)
         self.lbl_gastos.setBuddy(self.tw_gastos)
 
@@ -87,6 +91,7 @@ class Ui_ventanaPrincipal(object):
         self.menu_Importar.setTitle(_translate("ventanaPrincipal", "&Importar"))
         self.toolBar.setWindowTitle(_translate("ventanaPrincipal", "toolBar"))
         self.actionArchivo_de_movimientos_del_Banco_Nacional.setText(_translate("ventanaPrincipal", "Archivo de movimientos del Banco Nacional"))
+        self.actionArchivo_de_movimientos_de_BAC_Credomatic.setText(_translate("ventanaPrincipal", "Archivo de movimientos de BAC Credomatic"))
 from ui_MplCanvas import MplCanvas
 
 

@@ -109,6 +109,7 @@
       <string>&amp;Importar</string>
      </property>
      <addaction name="actionArchivo_de_movimientos_del_Banco_Nacional"/>
+     <addaction name="actionArchivo_de_movimientos_de_BAC_Credomatic"/>
     </widget>
     <addaction name="menu_Importar"/>
    </widget>
@@ -126,10 +127,16 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionArchivo_de_movimientos_del_Banco_Nacional"/>
+   <addaction name="actionArchivo_de_movimientos_de_BAC_Credomatic"/>
   </widget>
   <action name="actionArchivo_de_movimientos_del_Banco_Nacional">
    <property name="text">
     <string>Archivo de movimientos del Banco Nacional</string>
+   </property>
+  </action>
+  <action name="actionArchivo_de_movimientos_de_BAC_Credomatic">
+   <property name="text">
+    <string>Archivo de movimientos de BAC Credomatic</string>
    </property>
   </action>
  </widget>

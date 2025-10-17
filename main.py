@@ -14,6 +14,7 @@ from ui_dlg_importar import Ui_dlg_importar
 import sys
 import pandas as pd
 from datetime import datetime
+from io import StringIO
 
 __version__ = "0.0.1"
 COLUMNA_CATEGORIA = 6
@@ -93,11 +94,68 @@ class VentanaPrincipal(QMainWindow, Ui_ventanaPrincipal):
         
         saldosBN1.rename(columns={'fechaMovimiento': 'fechaRegistro'}, inplace=True)
         
-        parseados = saldosBN1.apply(lambda fila: VentanaPrincipal.parse_descripcion(fila['fechaRegistro'], fila['descripcion'], fila['debito']), axis=1)
+        parseados = saldosBN1.apply(lambda fila: VentanaPrincipal.parse_descripcion_BN(fila['fechaRegistro'], fila['descripcion'], fila['debito']), axis=1)
         parseadosDf = pd.DataFrame(parseados.tolist(), index=parseados.index, columns=['fechaMovimiento', 'descripcion'])
         saldosBN1[['fechaMovimiento', 'categoria']] = parseadosDf
         
         dlg_importar = Dlg_Importar(saldosBN1)
+        respuesta = dlg_importar.exec_()
+        
+        if respuesta == QDialog.Accepted:
+            self.df = dlg_importar.df
+            self.actualizarUi()
+            
+    @pyqtSlot()
+    def on_actionArchivo_de_movimientos_de_BAC_Credomatic_triggered(self):
+        nombre_archivo, _ = QFileDialog.getOpenFileName(self, "Abrir archivo",
+                                       ".",
+                                       "*.csv")
+        
+        tabla_principal = ""
+        with open(nombre_archivo, 'r', encoding='ISO-8859-1') as f:
+            tabla = False
+            for linea in f:
+                if linea.startswith("Detalle de Estado Bancario"):
+                    tabla = True
+                elif linea.startswith("Resumen de Estado Bancario"):
+                    break
+                elif tabla:
+                    tabla_principal += linea + "\n"
+                    
+        contenido = StringIO(tabla_principal)
+        
+        #print(pd.read_csv(contenido).columns)
+        
+        saldosBAC = pd.read_csv(contenido, sep=', ',
+                        usecols=['Fecha de Transacción', 
+                                 'Referencia de Transacción', 
+                                 'Código de Transacción', 
+                                 'Descripción de Transacción', 
+                                 'Débito de Transacción', 
+                                 'Crédito de Transacción', 
+                                 'Balance de Transacción'],
+                        parse_dates=['Fecha de Transacción'],
+                        dayfirst=True,
+                        dtype={'Referencia de Transacción': str})
+        
+        saldosBAC['categoria'] = 'Otros gastos'
+        
+        parseados = saldosBAC \
+            .apply(lambda fila: \
+                   VentanaPrincipal.parse_descripcion_BAC(fila['Descripción de Transacción'],
+                                                          fila['Débito de Transacción']),
+                   axis=1)
+        parseadosDf = pd.DataFrame(parseados.tolist(), 
+                                   index=parseados.index, 
+                                   columns=['descripcion'])
+        saldosBAC[['categoria']] = parseadosDf
+        
+        saldosBAC.rename(columns={'Fecha de Transacción': 'fechaMovimiento',
+                                  'Débito de Transacción': 'debito',
+                                  'Crédito de Transacción': 'credito'},
+                         inplace=True)
+        
+        dlg_importar = Dlg_Importar(saldosBAC)
         respuesta = dlg_importar.exec_()
         
         if respuesta == QDialog.Accepted:
@@ -131,7 +189,7 @@ class VentanaPrincipal(QMainWindow, Ui_ventanaPrincipal):
             self.wgt_grafico.draw()
         
     @staticmethod
-    def parse_descripcion(fecha, descripcion, debito):
+    def parse_descripcion_BN(fecha, descripcion, debito):
     
         try:
             dia = int(descripcion[:2])
@@ -163,6 +221,24 @@ class VentanaPrincipal(QMainWindow, Ui_ventanaPrincipal):
             return fecha, "Otros ingresos"
         else:
             return fecha, "Otros gastos"
+        
+    @staticmethod
+    def parse_descripcion_BAC(descripcion, debito):
+        
+        if "UBER BV" in descripcion:
+            return "Transporte"
+        elif "UBERBV EATS" in descripcion:
+            return "Comida"
+        elif "THE SPOT" in descripcion or "AUTO MERCADO" in descripcion:
+            return "Diario"
+        elif "TRU VICE" in descripcion:
+            return "Suscripciones"
+        elif "SALARIO PLANILLA BANCO NACIONAL" in descripcion:
+            return "Salario BN"
+        elif debito == 0:
+            return "Otros ingresos"
+        else:
+            return "Otros gastos"
         
 if __name__ == "__main__":
     app = QApplication(sys.argv)
