@@ -160,5 +160,5 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     main_window = VentanaPrincipal()
     
-    main_window.show()
+    main_window.showMaximized()
     app.exec_()
